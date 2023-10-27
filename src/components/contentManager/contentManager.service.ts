@@ -43,7 +43,7 @@ export class ContentManagerService {
             return true;
         }
         catch (err) {
-            logger.error( {category: 'content folder'}, err);
+            logger.error( {category: 'file folder'}, err);
             return false;
         }
     }
