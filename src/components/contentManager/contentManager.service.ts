@@ -39,7 +39,7 @@ export class ContentManagerService {
                 logger.error({category: 'mongoDB'}, "didn't delete the recording: " + file);
                 return false;
             }
-            logger.info("deleted the recording: " + file + " succesfully");
+            logger.info("deleted the recording: " + file + " successfully");
             return true;
         }
         catch (err) {
