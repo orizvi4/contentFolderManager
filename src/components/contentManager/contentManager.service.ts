@@ -3,26 +3,12 @@ import { InjectModel } from "@nestjs/mongoose";
 import * as fs from 'fs';
 import { Recording } from "./models/recording.model";
 import { Model } from "mongoose";
-
-const bunyan = require('bunyan');
-const logstashStream = require('bunyan-logstash-tcp').createStream({
-    host: '127.0.0.1',
-    port: 5000
-});
-
-const logger = bunyan.createLogger({
-    elasticIndex: 'content-folder-manager',
-    name: 'content-folder-manager',
-    category: 'code',
-    streams: [{
-        stream: logstashStream
-    }],
-});
+import { LoggerService } from "src/common/services/logger.service";
 
 const CONTENT_PATH = 'C:/Program Files/Wowza Media Systems/Wowza Streaming Engine 4.8.24+4/content';
 @Injectable()
 export class ContentManagerService {
-    constructor(@InjectModel(Recording.name) private readonly recordingModel: Model<Recording>) { }
+    constructor(@InjectModel(Recording.name) private readonly recordingModel: Model<Recording>, private loggerService: LoggerService) { }
 
     async deleteFile(file: string): Promise<boolean> {
         try {
@@ -36,14 +22,14 @@ export class ContentManagerService {
             })
             const res = await this.recordingModel.deleteOne({ url: `${CONTENT_PATH}/${file}` });
             if (res == null) {
-                logger.error({category: 'mongoDB'}, "didn't delete the recording: " + file);
+                this.loggerService.logError("didn't delete the recording: " + file, 'mongoDB');
                 return false;
             }
-            logger.info("deleted the recording: " + file + " successfully");
+            this.loggerService.logInfo("deleted the recording: " + file + " successfully");
             return true;
         }
         catch (err) {
-            logger.error( {category: 'file folder'}, err);
+            this.loggerService.logError(err.message, 'file folder');
             return false;
         }
     }
