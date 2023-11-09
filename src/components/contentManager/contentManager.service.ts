@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import * as fs from 'fs';
 import { Recording } from "./models/recording.model";
@@ -30,7 +30,7 @@ export class ContentManagerService {
         }
         catch (err) {
             this.loggerService.logError(err.message, 'file folder');
-            return false;
+            throw new InternalServerErrorException();
         }
     }
 }
