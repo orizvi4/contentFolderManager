@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ContentManagerModule } from './components/contentManager/contentManager.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ImportFileModule } from './components/importFile/importFile.module';
 
 @Module({
-  imports: [ContentManagerModule, MongooseModule.forRoot('mongodb://127.0.0.1:27017/database')],
+  imports: [ImportFileModule, ContentManagerModule, MongooseModule.forRoot('mongodb://127.0.0.1:27017/database')],
   controllers: [AppController],
   providers: [AppService],
 })

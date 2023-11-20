@@ -4,8 +4,9 @@ import * as fs from 'fs';
 import { Recording } from "./models/recording.model";
 import { Model } from "mongoose";
 import { LoggerService } from "src/common/services/logger.service";
+import { Constants } from "src/common/constants.class";
 
-const CONTENT_PATH = 'C:/Program Files/Wowza Media Systems/Wowza Streaming Engine 4.8.24+4/content';
+//const CONTENT_PATH = 'C:/Program Files/Wowza Media Systems/Wowza Streaming Engine 4.8.24+4/content';//compare
 @Injectable()
 export class ContentManagerService {
     constructor(@InjectModel(Recording.name) private readonly recordingModel: Model<Recording>, private loggerService: LoggerService) { }
@@ -13,14 +14,14 @@ export class ContentManagerService {
     async deleteFile(file: string): Promise<boolean> {
         try {
             await new Promise((resolve, reject) => {
-                fs.unlink(`${CONTENT_PATH}/${file}`, (err) => {
+                fs.unlink(`${Constants.WOWZA_CONTENT_FOLDER}/${file}`, (err) => {
                     if (err) {
                         return reject(err);
                     }
                     resolve(true);
                 });
             })
-            const res = await this.recordingModel.deleteOne({ url: `${CONTENT_PATH}/${file}` });
+            const res = await this.recordingModel.deleteOne({ url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}` });
             if (res == null) {
                 this.loggerService.logError("didn't delete the recording: " + file, 'mongoDB');
                 return false;
