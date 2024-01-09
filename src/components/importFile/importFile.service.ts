@@ -10,7 +10,7 @@ import { LoggerService } from 'src/common/services/logger.service';
 
 @Injectable()
 export class ImportFileService {
-    constructor(@InjectModel(Recording.name) private recordingModel: Model<Recording>, private loggerService: LoggerService) { }
+    constructor(@InjectModel(Recording.name) private recordingModel: Model<Recording>) { }
 
     async addToDB(name: string, channel: string, start: Date, end: Date): Promise<boolean> {
         try {
@@ -22,11 +22,12 @@ export class ImportFileService {
             }
             const newRecording = new this.recordingModel(recordingEntity);
             await newRecording.save();
-            this.loggerService.logInfo('recording in channel: ' + channel + ' created successfully');
+            LoggerService.logInfo('recording in channel: ' + channel + ' created successfully');
             return true;
         }
         catch (err) {
-            this.loggerService.logError(err.message, 'mongoDB');
+            LoggerService.logError(err.message, 'mongoDB');
+            console.log(err);
             throw new InternalServerErrorException();
         }
     }
@@ -43,9 +44,9 @@ export class ImportFileService {
                 const startInd: number = file.indexOf('_');
                 const endInd: number = file.indexOf('.mp4');
     
-                const match: string = file.substring(startInd + 1, endInd);
-                if (match) {
-                    const currentNumber: number = parseInt(match, 10);
+                const suffix: string = file.substring(startInd + 1, endInd);
+                if (suffix) {
+                    const currentNumber: number = parseInt(suffix, 10);
                     if (currentNumber > largestNumber) {
                         largestNumber = currentNumber;
                     }
@@ -54,7 +55,8 @@ export class ImportFileService {
             return largestNumber;
         }
         catch(err) {
-            this.loggerService.logError(err.message, 'file folder');
+            LoggerService.logError(err.message, 'file folder');
+            console.log(err);
             throw new InternalServerErrorException();
         }
     }
@@ -98,7 +100,8 @@ export class ImportFileService {
             }
         }
         catch(err) {
-            this.loggerService.logError(err.message, 'mongoDB');
+            LoggerService.logError(err.message, 'mongoDB');
+            console.log(err);
             throw new InternalServerErrorException();
         }
     }
