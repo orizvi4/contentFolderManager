@@ -5,6 +5,11 @@ import { LoggerService } from "./logger.service";
 
 @Injectable()
 export class TokenService {
+
+    public async tooManyRequests(token: string): Promise<void> {
+        await axios.post<void>(`${Constants.AUTH_SERVICE}/strike/dos`, {token: token});
+    }
+
     public async verify(token: string): Promise<boolean> {
         try {
             return (await axios.get<boolean>(`${Constants.AUTH_SERVICE}/tokens/verify`, { headers: { Authorization: `Bearer ${token}` } })).data;

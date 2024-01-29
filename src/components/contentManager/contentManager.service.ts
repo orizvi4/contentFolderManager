@@ -12,6 +12,11 @@ export class ContentManagerService {
 
     async deleteFile(file: string): Promise<boolean> {
         try {
+            const res = await this.recordingModel.deleteOne({ url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}` });
+            if (res == null) {
+                LoggerService.logError("didn't delete the recording: " + file, 'mongoDB');
+                return false;
+            }
             await new Promise((resolve, reject) => {
                 fs.unlink(`${Constants.WOWZA_CONTENT_FOLDER}/${file}`, (err) => {
                     if (err) {
@@ -20,11 +25,6 @@ export class ContentManagerService {
                     resolve(true);
                 });
             })
-            const res = await this.recordingModel.deleteOne({ url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}` });
-            if (res == null) {
-                LoggerService.logError("didn't delete the recording: " + file, 'mongoDB');
-                return false;
-            }
             LoggerService.logInfo("deleted the recording: " + file + " successfully");
             return true;
         }

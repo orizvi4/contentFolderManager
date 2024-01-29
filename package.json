@@ -24,6 +24,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/mongoose": "^10.0.1",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/throttler": "^5.1.1",
     "axios": "^1.6.0",
     "bunyan": "^1.8.15",
     "bunyan-logstash-tcp": "^1.0.0",

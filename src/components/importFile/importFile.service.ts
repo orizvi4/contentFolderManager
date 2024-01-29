@@ -32,7 +32,7 @@ export class ImportFileService {
         }
     }
 
-    videoSuffix(channel: string) {
+    public videoSuffix(channel: string) {
         const folderPath = Constants.WOWZA_CONTENT_FOLDER;
         try {
 
@@ -61,7 +61,7 @@ export class ImportFileService {
         }
     }
 
-    async isDateValid(channel: string, start: Date, end: Date): Promise<boolean> {
+    public async isDateValid(channel: string, start: Date, end: Date): Promise<boolean> {
         try {
             start = new Date(start + 'Z');
             end = new Date(end + 'Z')
