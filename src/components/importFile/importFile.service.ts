@@ -36,25 +36,31 @@ export class ImportFileService {
         const folderPath = Constants.WOWZA_CONTENT_FOLDER;
         try {
 
-            const files: string[] = fs.readdirSync(folderPath);
-    
-            let largestNumber = -1;
-    
-            for (const file of files) {
-                const startInd: number = file.indexOf('_');
-                const endInd: number = file.indexOf('.mp4');
-    
-                const suffix: string = file.substring(startInd + 1, endInd);
-                if (suffix) {
-                    const currentNumber: number = parseInt(suffix, 10);
-                    if (currentNumber > largestNumber) {
-                        largestNumber = currentNumber;
-                    }
+            const files: Array<string> = fs.readdirSync(folderPath);
+            let numbers: Array<number> = files.map((name) => {
+                if (name.indexOf(channel + "-rec") == 0) {
+                    const start: number = name.indexOf('_') + 1;
+                    const end: number = name.indexOf(".mp4");
+                    return Number(name.substring(start, end));
+                }
+            });
+            numbers.sort((a, b) => a - b);
+            numbers = numbers.filter((item) => {
+                if (item !== undefined) {
+                    return true;
+                }
+            });
+            for (let i: number = 0; i < numbers.length; i++) {
+                if (i != numbers[i]) {
+                    return i;
+                }
+                else if (i + 1 == numbers.length) {
+                    return i + 1;
                 }
             }
-            return largestNumber;
+            return -1;
         }
-        catch(err) {
+        catch (err) {
             LoggerService.logError(err.message, 'file folder');
             console.log(err);
             throw new InternalServerErrorException();
@@ -73,7 +79,7 @@ export class ImportFileService {
                             endAt: { $gte: start },
                             channel: channel
                         }
-    
+
                     ]
                 },
                 {
@@ -99,7 +105,7 @@ export class ImportFileService {
                 return true;
             }
         }
-        catch(err) {
+        catch (err) {
             LoggerService.logError(err.message, 'mongoDB');
             console.log(err);
             throw new InternalServerErrorException();

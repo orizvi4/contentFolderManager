@@ -41,7 +41,7 @@ export class TokenService {
             return (await axios.get<boolean>(`${Constants.AUTH_SERVICE}/tokens/verify/editor`, { headers: { Authorization: `Bearer ${token}` } })).data;
         }
         catch (err) {
-            console.log(err.response.data);
+            console.log(err);
             LoggerService.logError(err, "token");
             if ((err as AxiosError).response.status == 401) {
                 throw new UnauthorizedException();
