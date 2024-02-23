@@ -4,10 +4,20 @@ import { Constants } from "../constants.class";
 
 @Injectable()
 export class LoggerService {
-    public static logInfo(message: string) {
-        // axios.post<void>(`${Constants.LOGGER_SERVICE}/info`, {message: message, elasticIndex: Constants.ELASTIC_INDEX});
+    public static async logInfo(message: string): Promise<void> {
+        try {
+            await axios.post<void>(`${Constants.LOGGER_SERVICE}/info`, { message: message, elasticIndex: Constants.ELASTIC_INDEX });
+        }
+        catch (err) {
+            console.log(err.message);
+        }
     }
-    public static logError(message: string, category: string) {
-        // axios.post<void>(`${Constants.LOGGER_SERVICE}/error`, {message: message, elasticIndex: Constants.ELASTIC_INDEX, category: category});
+    public static async logError(message: string, category: string): Promise<void> {
+        try {
+            await axios.post<void>(`${Constants.LOGGER_SERVICE}/error`, { message: message, elasticIndex: Constants.ELASTIC_INDEX, category: category });
+        }
+        catch (err) {
+            console.log(err.message);
+        }
     }
 }

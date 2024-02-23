@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import * as fs from 'fs';
 import { Recording } from "./models/recording.model";
@@ -12,11 +12,6 @@ export class ContentManagerService {
 
     async deleteFile(file: string): Promise<boolean> {
         try {
-            const res = await this.recordingModel.deleteOne({ url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}` });
-            if (res == null) {
-                LoggerService.logError("didn't delete the recording: " + file, 'mongoDB');
-                return false;
-            }
             await new Promise((resolve, reject) => {
                 fs.unlink(`${Constants.WOWZA_CONTENT_FOLDER}/${file}`, (err) => {
                     if (err) {
@@ -24,13 +19,21 @@ export class ContentManagerService {
                     }
                     resolve(true);
                 });
-            })
+            });
+            const res = await this.recordingModel.deleteOne({ url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}` });
+            if (res == null) {
+                LoggerService.logError("didn't delete the recording: " + file, 'mongoDB');
+                return false;
+            }
             LoggerService.logInfo("deleted the recording: " + file + " successfully");
             return true;
         }
         catch (err) {
-            LoggerService.logError(err.message, 'file folder');
             console.log(err);
+            if (err.errno == -4082) {
+                LoggerService.logError(err.message, 'file folder');
+                throw new BadRequestException();
+            }
             throw new InternalServerErrorException();
         }
     }
