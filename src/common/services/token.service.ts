@@ -17,7 +17,7 @@ export class TokenService {
         catch (err) {
             console.log(err);
             LoggerService.logError(err, "token");
-            if ((err as AxiosError).response.status == 401) {
+            if ((err as AxiosError).response != null && (err as AxiosError).response.status == 401) {
                 throw new UnauthorizedException();
             }
             throw new InternalServerErrorException();
@@ -30,7 +30,7 @@ export class TokenService {
         catch (err) {
             console.log(err.response.data);
             LoggerService.logError(err, "token");
-            if ((err as AxiosError).response.status == 401) {
+            if ((err as AxiosError).response != null && (err as AxiosError).response.status == 401) {
                 throw new UnauthorizedException();
             }
             throw new InternalServerErrorException();
@@ -43,7 +43,7 @@ export class TokenService {
         catch (err) {
             console.log(err);
             LoggerService.logError(err, "token");
-            if ((err as AxiosError).response.status == 401) {
+            if ((err as AxiosError).response != null && (err as AxiosError).response.status == 401) {
                 throw new UnauthorizedException();
             }
             throw new InternalServerErrorException();
