@@ -16,6 +16,7 @@ export class ImportFileService {
         try {
             const recordingEntity: RecordingDTO = {
                 channel: channel,
+                isDeleting: false,
                 startAt: new Date(start + 'Z'),
                 endAt: new Date(end + 'Z'),
                 url: `C:/Program Files/Wowza Media Systems/Wowza Streaming Engine 4.8.24+4/content/${name}`

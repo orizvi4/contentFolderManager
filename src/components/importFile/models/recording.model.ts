@@ -7,6 +7,9 @@ export class Recording {
     url: string;
 
     @Prop()
+    isDeleting: boolean;
+
+    @Prop()
     startAt: Date;
 
     @Prop()

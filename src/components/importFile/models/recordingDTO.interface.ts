@@ -3,4 +3,5 @@ export interface RecordingDTO {
     endAt: Date;
     channel: string;
     url: string;
+    isDeleting: boolean
 }

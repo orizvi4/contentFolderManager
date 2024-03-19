@@ -19,6 +19,7 @@ export class ContentManagerService {
 
     public async deleteFile(file: string): Promise<boolean> {
         try {
+            await this.recordingModel.findOneAndUpdate({url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}`}, {$set: {isDeleting: true}});
             await new Promise((resolve, reject) => {
                 fs.unlink(`${Constants.WOWZA_CONTENT_FOLDER}/${file}`, (err) => {
                     if (err) {
