@@ -17,7 +17,8 @@ export class ImportFileController {
       diskStorage({
         destination: Constants.WOWZA_CONTENT_FOLDER,
         filename: (req, file, callback) => {
-          const filename = `${req.query.channel}-rec.stream_${req.query.suffix}.mp4.mp4`;
+          const filename = `${req.query.channel}-rec.stream_${req.query.suffix}.mp4`;
+          console.log(file);
           callback(null, filename);
         }
       })
