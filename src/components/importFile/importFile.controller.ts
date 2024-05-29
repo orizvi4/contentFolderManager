@@ -18,7 +18,6 @@ export class ImportFileController {
         destination: Constants.WOWZA_CONTENT_FOLDER,
         filename: (req, file, callback) => {
           const filename = `${req.query.channel}-rec.stream_${req.query.suffix}.mp4`;
-          console.log(file);
           callback(null, filename);
         }
       })
@@ -28,18 +27,12 @@ export class ImportFileController {
       fileType: 'mp4'
     })]
   })) file: Express.Multer.File, @Body() body: RecordingDTO, @Query('channel') channel: string, @Query('suffix') Suffix): Promise<boolean> {
-    return await this.importFileService.addToDB(file.filename, channel, body.startAt, body.endAt);
+    return await this.importFileService.addToDB(file.filename, channel, body.startAt);
   }
 
   @UseGuards(EditorGuard)
   @Get('/file/suffix')
   getSuffix(@Query('channel') channel: string): number {
     return this.importFileService.videoSuffix(channel)
-  }
-
-  @UseGuards(EditorGuard)
-  @Post('file/date')
-  async isDateValid(@Body() body: RecordingDTO): Promise<boolean> {
-    return await this.importFileService.isDateValid(body.channel, body.startAt, body.endAt);
   }
 }

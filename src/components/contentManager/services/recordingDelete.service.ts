@@ -36,7 +36,7 @@ export class RecordingDeleteService {
                             });
                             await this.recordingDeleteModel.deleteOne({ recordingUrl: element.recordingUrl });
                             await this.recordingModel.deleteOne({ url: element.recordingUrl });
-                            this.websocketservice.recordingDelete(element.recordingUrl);
+                            await this.websocketservice.recordingDelete(element.recordingUrl);
                             recordings.splice(index, 1);
                         }
                         catch (err) {
