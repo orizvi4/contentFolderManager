@@ -17,7 +17,7 @@ export class ContentManagerService {
         private recordingDeleteService: RecordingDeleteService,
     ) { }
 
-    public async deleteFile(file: string): Promise<boolean> {
+    public async deleteFile(file: string, notValid?: boolean): Promise<boolean> {
         try {
             await this.recordingModel.findOneAndUpdate({url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}`}, {$set: {isDeleting: true}});
             await new Promise((resolve, reject) => {
@@ -28,14 +28,16 @@ export class ContentManagerService {
                     resolve(true);
                 });
             });
-            await this.recordingDeleteModel.deleteOne({recordingUrl: `${Constants.WOWZA_CONTENT_FOLDER}/${file}`});
-            const res = await this.recordingModel.deleteOne({ url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}` });
-            if (res == null) {
-                LoggerService.logError("didn't delete the recording: " + file, 'mongoDB');
-                return false;
+            if (notValid === undefined) {
+                await this.recordingDeleteModel.deleteOne({recordingUrl: `${Constants.WOWZA_CONTENT_FOLDER}/${file}`});
+                const res = await this.recordingModel.deleteOne({ url: `${Constants.WOWZA_CONTENT_FOLDER}/${file}` });
+                if (res == null) {
+                    LoggerService.logError("didn't delete the recording: " + file, 'mongoDB');
+                    return false;
+                }
+                LoggerService.logInfo("deleted the recording: " + file + " successfully");
+                return true;
             }
-            LoggerService.logInfo("deleted the recording: " + file + " successfully");
-            return true;
         }
         catch (err) {
             console.log(err);

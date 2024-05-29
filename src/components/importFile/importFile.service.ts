@@ -8,17 +8,23 @@ import { RecordingDTO } from './models/recordingDTO.interface';
 import { LoggerService } from 'src/common/services/logger.service';
 import getVideoDurationInSeconds from 'get-video-duration';
 import { resolve } from 'path';
+import { ContentManagerService } from '../contentManager/contentManager.service';
 
 
 
 @Injectable()
 export class ImportFileService {
-    constructor(@InjectModel(Recording.name) private recordingModel: Model<Recording>) { }
+    constructor(@InjectModel(Recording.name) private recordingModel: Model<Recording>,
+    private contentFolderManagerService: ContentManagerService) { }
 
     async addToDB(name: string, channel: string, start: Date): Promise<boolean> {
         try {
             const filePath = `${Constants.WOWZA_CONTENT_FOLDER}/${name}`;
             const duration = await this.getVideoLength(filePath);
+            if (await this.isDateValid(channel, start, new Date((new Date(start)).getTime() + duration * 1000)) !== true) {
+                await this.contentFolderManagerService.deleteFile(name, true);
+                return false;
+            }
 
             const recordingEntity: RecordingDTO = {
                 channel: channel,
@@ -73,6 +79,51 @@ export class ImportFileService {
         }
         catch (err) {
             LoggerService.logError(err.message, 'file folder');
+            console.log(err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    public async isDateValid(channel: string, start: Date, end: Date): Promise<boolean> {
+        try {
+            start = new Date(start + 'Z');
+            end = new Date(end + 'Z')
+            const record: RecordingDTO = await this.recordingModel.findOne({
+                $or: [{
+                    $and: [
+                        {
+                            startAt: { $lte: start },
+                            endAt: { $gte: start },
+                            channel: channel
+                        }
+
+                    ]
+                },
+                {
+                    $and: [{
+                        startAt: { $lte: end },
+                        endAt: { $gte: end },
+                        channel: channel
+                    }]
+                },
+                {
+                    $and: [{
+                        startAt: { $gte: start },
+                        endAt: { $lte: end },
+                        channel: channel
+                    }]
+                }
+                ]
+            });
+            if (record) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        catch (err) {
+            LoggerService.logError(err.message, 'mongoDB');
             console.log(err);
             throw new InternalServerErrorException();
         }

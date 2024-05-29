@@ -12,5 +12,6 @@ import { RecordingDeleteService } from './services/recordingDelete.service';
   imports: [MongooseModule.forFeature([{name: Recording.name, schema: recordingSchema}, {name: RecordingDelete.name, schema: recordingDeleteSchema}]), CommonModule],
   controllers: [ContentManagerController],
   providers: [ContentManagerService, Recording, RecordingDeleteService],
+  exports: [ContentManagerService, Recording, RecordingDeleteService]
 })
 export class ContentManagerModule {}
